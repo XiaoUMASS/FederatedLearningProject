@@ -17,8 +17,18 @@ Understand and Re-implement the FL framework which can work on data from multimo
 • Evaluate the system on a multimodal dataset that is relatively balanced in class distribution
 
 ## System blocks:
+![](./Multimodal Federated Learning Design Diagram.png)
 
 ## hw/sw requirements:
+• Laptop with CUDA-enabled GPU (optional)
+• Anaconda 3
+• Python 3.7+
+• Pytorch 1.8+
+• Torchvision 0.9+
+• Numpy 1.19+
+• Matplotlib 3.3+
+• Scipy 1.4+
+• MPI for Python 3.0+
 
 ## Team members responsibilities:
 Both group members will participate in depth in this project, both need to thoroughly understand the FL framework and what is expected to achieve.
