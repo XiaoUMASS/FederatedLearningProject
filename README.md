@@ -17,7 +17,7 @@ Understand and Re-implement the FL framework which can work on data from multimo
 • Evaluate the system on a multimodal dataset that is relatively balanced in class distribution
 
 ## System blocks:
-![](./Multimodal Federated Learning Design Diagram.png)
+![](./Diagram.png)
 
 ## hw/sw requirements:
 • Laptop with CUDA-enabled GPU (optional)
