@@ -4,31 +4,24 @@ import logging
 import os
 import warnings
 import torch
-from mpi4py import MPI
 from fl import FL
 
-
-# For MPI experiments
-COMM = MPI.COMM_WORLD
-RANK = COMM.Get_rank()
-
-
-def main():
-    is_mpi = COMM.Get_size() != 1
-    config = read_config()
-    fl = FL(config, is_mpi, RANK)
-    fl.start()
-
-
-def read_config():
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("--config", type=str,
-                            help="name of the config file of simulation")
-    args = arg_parser.parse_args()
+def read_config(path):
     config = configparser.ConfigParser()
-    config.read(args.config)
+    config.read(path)
+
     return config
 
+def main():
+    # Scrub ./config directory and grab all config files
+    data_configs = [os.path.abspath(os.path.join(root, name)) for root, dirs, files in os.walk("./config") for name in files]
+
+    # Run each config  TODO: reimplement MPI support
+    for path in data_configs:
+        print(path)
+        config = read_config(path)
+        fl = FL(config)
+        fl.start()
 
 if __name__ == "__main__":
     main()

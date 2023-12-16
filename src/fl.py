@@ -75,19 +75,21 @@ class FL:
                     (copy.deepcopy(local_model), client.modality, client_weight))
 
             # Cloud update on the server
-            train_loss, train_accuracy = server.update(local_models)
+            train_loss, train_accuracy, class_data = server.update(local_models)
+            self.write_per_class(t, True, class_data)
 
             # Cloud evaluation
             if t % self.eval_interval != 0:
                 continue
             else:
                 with torch.no_grad():
-                    test_loss, test_accuracy, test_f1 = server.eval(
+                    test_loss, test_accuracy, test_f1, class_data = server.eval(
                         server_test)
                 result_table[row] = np.array(
                     (t+1, local_ae_loss, train_loss, train_accuracy, test_loss, test_accuracy, test_f1))
                 row += 1
                 self.write_result(result_table)
+                self.write_per_class(t, False, class_data)
 
     def write_result(self, result_table):
         """ Writes simulation results into a result.txt file
@@ -99,6 +101,28 @@ class FL:
             results_path = os.path.join(self.results_path, f"rep_{self.rank}")
         else:
             results_path = self.results_path
+        fmt = '%3d', '%1.4e', '%1.4e', '%1.4e', '%1.4e', '%1.4e', '%1.4e'
         Path(results_path).mkdir(parents=True, exist_ok=True)
         np.savetxt(os.path.join(results_path, "results.txt"),
-                   result_table, delimiter=",", fmt="%1.4e")
+                   result_table, delimiter=",", fmt=fmt)
+    
+    def write_per_class(self, round, train, class_results):
+        # Build an array where each entry is [label, sample_size, accuracy]
+        results = []
+        for key, values in class_results.items():
+            correct, total = values
+            results.append([round+1, key, correct, total, correct/total])
+
+
+        if self.is_mpi:
+            results_path = os.path.join(self.results_path, f"rep_{self.rank}")
+        else:
+            results_path = self.results_path
+
+        fmt = '%3d', '%2d', '%1.4e', '%1.4e', '%1.4e'
+        mode = "w" if (round == 0) else "a"
+        name = "train_perclass.txt" if train else "test_perclass.txt"
+        Path(results_path).mkdir(parents=True, exist_ok=True)
+        with open(os.path.join(results_path, name), mode) as f:
+            np.savetxt(f, results, delimiter=",", fmt=fmt)
+            f.write("\n")
