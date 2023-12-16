@@ -287,8 +287,7 @@ def Train_Accuracy_Per_Class():
         ax.set_title(title, fontsize=20, weight="bold")
         ax.set_xlabel(xlabel, fontsize=20)
         ax.set_ylabel(ylabel, fontsize=20)
-        if (ylabel == "Accuracy"): 
-            ax.set_ylim(0,1)
+        ax.set_ylim(0,1)
 
         ax.set_xlim(1, len(train_data))
         x = np.arange(1, len(train_data)+1)
@@ -302,8 +301,8 @@ def Train_Accuracy_Per_Class():
         for y in accuracies:
             ax.plot(x, y,linewidth=2)
 
-        ax.tick_params(axis='x', labelsize=15)
-        ax.tick_params(axis='y', labelsize=15)
+        ax.tick_params(axis='x', labelsize=20)
+        ax.tick_params(axis='y', labelsize=20)
         ax.legend(["class"+str(int(lbl)) for lbl in train_classes], loc="upper right")
         
 
@@ -336,33 +335,31 @@ def Test_Accuracy_Per_Class():
         train_data = np.split(train_data, np.unique(train_data[:,0], return_index=True)[1])[1:]
         test_data = np.split(test_data, np.unique(test_data[:,0], return_index=True)[1])[1:]
 
-        # Generate individual plots
 
-        fig = plt.figure(figsize=(18,12))
+        fig = plt.figure(figsize=(16,12))
         fig.suptitle(os.path.basename(folder) + " - " + title, fontsize=20, weight="bold")
         ax1 = fig.add_subplot(111)  
-        ax1.set_title(title, fontsize=14, weight="bold")
-        ax1.set_xlabel(xlabel, fontsize=12)
-        ax1.set_ylabel(ylabel, fontsize=12)
-        if (ylabel == "Accuracy"): 
-            ax1.set_ylim(-0.1,1.1)
+        ax1.set_title(title, fontsize=20, weight="bold")
+        ax1.set_xlabel(xlabel, fontsize=20)
+        ax1.set_ylabel(ylabel, fontsize=20)
+        ax1.set_ylim(0,1.1)
 
-            ax1.set_xlim(1, len(train_data))
+        ax1.set_xlim(1, len(train_data))
 
-            x = list(range(1, len(train_data), 2))
-            accuracies = np.empty((int(np.max(test_classes)+1), len(x)))
-            accuracies[:] = np.nan
-            
-            for round in test_data:
-                for label in round:
-                    accuracies[int(label[1])][int(label[0]/2)] = label[4]
-                    test_distribution[int(label[1])] += label[3]
-            for y in accuracies:
-                ax1.plot(x, y)
+        x = list(range(1, len(train_data), 2))
+        accuracies = np.empty((int(np.max(test_classes)+1), len(x)))
+        accuracies[:] = np.nan
+        
+        for round in test_data:
+            for label in round:
+                accuracies[int(label[1])][int(label[0]/2)] = label[4]
+                test_distribution[int(label[1])] += label[3]
+        for y in accuracies:
+            ax1.plot(x, y,linewidth=2)
 
-            box = ax1.get_position()
-            ax1.set_position([box.x0, box.y0, box.width * .8, box.height])
-            ax1.legend(["class"+str(int(lbl)) for lbl in test_classes], loc="center left", bbox_to_anchor=(1, 0.5))
+        box = ax1.get_position()
+        ax1.set_position([box.x0, box.y0, box.width * .8, box.height])
+        ax1.legend(["class"+str(int(lbl)) for lbl in test_classes], loc="center left", bbox_to_anchor=(1, 0.5))
 
         # Save each figure individually
         prefix, suffix = folder.split(os.sep + "results" + os.sep)
